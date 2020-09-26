@@ -20,38 +20,33 @@ func uuidHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, uuid.New().String())
 }
 
+// StartServing starts serving content on ports 8080 and 8081
 func StartServing() {
-	fs := http.FileServer(http.Dir("./static"))
 
-	server8080 := http.NewServeMux()
-	server8080.Handle("/", fs)
-	server8080.HandleFunc("/ping", pingHandler)
-	server8080.HandleFunc("/uuid", uuidHandler)
-
-	server8081 := http.NewServeMux()
-	server8081.Handle("/", fs)
-	server8081.HandleFunc("/ping", pingHandler)
-	server8081.HandleFunc("/uuid", uuidHandler)
-
-	// Delay, if configured to do so with an environment variable
+	// We will delay, if configured to do so with an environment variable
 	delayStart := util.GetEnvInt("DELAY_START_MSEC", 0)
 	log.Printf("DELAY_START_MSEC: %d\n", delayStart)
 
-	// Delay once before the server on port 8080 starts
+	// start both servers, with delay before each
+	startServerOnPort(8080, delayStart)
+	startServerOnPort(8081, delayStart)
+}
+
+func startServerOnPort(port int, delayStart int) {
+	fs := http.FileServer(http.Dir("./static"))
+
+	server := http.NewServeMux()
+	server.Handle("/", fs)
+	server.HandleFunc("/ping", pingHandler)
+	server.HandleFunc("/uuid", uuidHandler)
+
+	// Delay before the server starts
 	log.Printf("Sleeping for %d ms", delayStart)
 	time.Sleep(time.Duration(delayStart) * time.Millisecond)
 
-	log.Println("Starting server on port 8080")
+	log.Printf("Starting server on port %d", port)
+	portName := fmt.Sprintf(":%d", port)
 	go func() {
-		log.Fatal(http.ListenAndServe(":8080", handlers.LoggingHandler(os.Stdout, server8080)))
-	}()
-
-	// Delay again before the server on port 8081 starts
-	log.Printf("Sleeping for %d ms", delayStart)
-	time.Sleep(time.Duration(delayStart) * time.Millisecond)
-
-	log.Println("Starting server on port 8081")
-	go func() {
-		log.Fatal(http.ListenAndServe(":8081", handlers.LoggingHandler(os.Stdout, server8081)))
+		log.Fatal(http.ListenAndServe(portName, handlers.LoggingHandler(os.Stdout, server)))
 	}()
 }
