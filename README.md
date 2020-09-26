@@ -6,7 +6,7 @@ It features a small HTTP server with the following characteristics:
 
 * It serves content on two ports (8080 and 8081) to enable testing that multiple Docker container ports can be exposed.
 * It serves an HTML root page, with a few basic elements, to enable verification that browser-based test tools can access the container.
-* It servers a non-HTML endpoint at `/ping`
+* It servers a non-HTML endpoint at `/ping`.
 * It implements a configurable delay at startup before each port's server is started, to enable testing of startup wait strategies (TCP or HTTP-based). Setting the environment variable `DELAY_START_MSEC` to a non-zero number will:
     * wait for the defined duration
     * start the port 8080 server
