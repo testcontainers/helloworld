@@ -12,14 +12,6 @@ import (
 	"github.com/testcontainers/helloworld/internal/util"
 )
 
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "PONG")
-}
-
-func uuidHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, uuid.New().String())
-}
-
 // StartServing starts serving content on ports 8080 and 8081
 func StartServing() {
 
@@ -27,18 +19,25 @@ func StartServing() {
 	delayStart := util.GetEnvInt("DELAY_START_MSEC", 0)
 	log.Printf("DELAY_START_MSEC: %d\n", delayStart)
 
+	// Create a UUID for this container instance
+	instanceUUID := uuid.New().String()
+
 	// start both servers, with delay before each
-	startServerOnPort(8080, delayStart)
-	startServerOnPort(8081, delayStart)
+	startServerOnPort(8080, instanceUUID, delayStart)
+	startServerOnPort(8081, instanceUUID, delayStart)
 }
 
-func startServerOnPort(port int, delayStart int) {
+func startServerOnPort(port int, instanceUUID string, delayStart int) {
 	fs := http.FileServer(http.Dir("./static"))
 
 	server := http.NewServeMux()
 	server.Handle("/", fs)
-	server.HandleFunc("/ping", pingHandler)
-	server.HandleFunc("/uuid", uuidHandler)
+	server.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "PONG")
+	})
+	server.HandleFunc("/uuid", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, instanceUUID)
+	})
 
 	// Delay before the server starts
 	log.Printf("Sleeping for %d ms", delayStart)
