@@ -17,7 +17,7 @@ It features a small HTTP server with the following characteristics:
 ## Example usage
 
 ```
-$ docker run -p 8080:8080 -p 8081:8081 -e DELAY_START_MSEC=2000 helloworld
+$ docker run -p 8080:8080 -p 8081:8081 -e DELAY_START_MSEC=2000 testcontainers/helloworld
 
 2020/09/26 08:50:55 DELAY_START_MSEC: 2000
 2020/09/26 08:50:55 Sleeping for 2000 ms
