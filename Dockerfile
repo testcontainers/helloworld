@@ -7,4 +7,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflag
 FROM scratch
 COPY static /static
 COPY --from=builder /helloworld /helloworld
-CMD ["/helloworld"]
+ENTRYPOINT ["/helloworld"]
