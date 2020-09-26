@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM golang:alpine3.12 AS builder
 WORKDIR /go/src/github.com/testcontainers/helloworld
 COPY . ./
 RUN go get .
