@@ -5,7 +5,7 @@ RUN go mod download
 COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /helloworld .
 
-FROM scratch
+FROM alpine:3.12
 COPY static /static
 COPY --from=builder /helloworld /helloworld
 ENTRYPOINT ["/helloworld"]
