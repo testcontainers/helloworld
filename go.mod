@@ -6,3 +6,5 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/handlers v1.5.1
 )
+
+require github.com/felixge/httpsnoop v1.0.1 // indirect
