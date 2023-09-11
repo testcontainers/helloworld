@@ -8,4 +8,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflag
 FROM alpine:3.16
 COPY static /static
 COPY --from=builder /helloworld /helloworld
+USER nobody
 ENTRYPOINT ["/helloworld"]
