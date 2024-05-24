@@ -9,6 +9,54 @@ env:
   IMAGE_REPOSITORY: testcontainers/helloworld
 
 jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - run: go version
+
+      - name: go-mod verify
+        run: go mod verify
+
+      - name: go-mod tidy
+        run: go mod tidy
+
+      - name: go-build
+        env:
+          GOOS: linux
+        run: go build
+
+      - name: go-test
+        run: go test -v ./...
+
+  test-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - run: go version
+
+      - name: go-mod verify
+        run: go mod verify
+
+      - name: go-mod tidy
+        run: go mod tidy
+
+      - name: go-build
+        env:
+          GOOS: windows
+        run: go build
+
+# TODO enable tests on Windows
+# Currently doesn't succeed, see https://github.com/testcontainers/testcontainers-go/issues/948
+#      - name: go-test
+#        run: go test -v ./...
+
   build-image-linux:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -190,8 +238,11 @@ jobs:
 
       - name: Check multi-arch manifest
         run: |
-          cat architectures.txt | sort | uniq > architectures_expected.txt
-          diff architectures_expected.txt architectures_actual.txt
+          cat architectures_actual.txt
+          cat supported-architectures.txt | sort | uniq > architectures_expected.txt
+          # we're counting the entries only, because windows os.version numbers change too frequently
+          # exclude manifest entries with "unknown" architectures
+          diff <(echo "$(cat architectures_expected.txt | wc -l)") <(echo "$(cat architectures_actual.txt | grep -v unknown_unknown_ | wc -l)")
 
   build:
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 # Testcontainers Helloworld Docker Image
 
-This is a Docker image for use by Testcontainers' own self-test suites. It is not intended for use outside of the Testcontainers project.
+This is a Docker image for use by Testcontainers' own self-test suites. It is not intended for use outside the Testcontainers project.
 
 It features a small HTTP server with the following characteristics:
 
