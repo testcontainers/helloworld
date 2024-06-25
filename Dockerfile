@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine3.16 AS builder
+FROM golang:1.20-alpine3.16 AS builder
 WORKDIR /go/src/github.com/testcontainers/helloworld
 COPY go.mod go.sum ./
 RUN go mod download
