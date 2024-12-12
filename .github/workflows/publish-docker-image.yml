@@ -119,6 +119,8 @@ jobs:
               --arch amd64 \
               ${target_image} "${target_image}-windows.ltsc2022";
           docker manifest push ${target_image};
+          docker tag "${target_image}" ${{ env.IMAGE_REPOSITORY }}:latest
+          docker push ${{ env.IMAGE_REPOSITORY }}:latest
 
   check-release:
     runs-on: ubuntu-latest
