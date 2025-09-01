@@ -17,7 +17,7 @@ COPY . .
 # Build binary:
 # -a: force rebuild
 # -installsuffix cgo: remove cgo support
-# -ldflags="-w -s -extldflags '-static'": enable static linking, omits the DWARF symbol table
+# -ldflags="-w -s -extldflags '-static'": enable static linking, omits the DWARF symbol table and debug information
 # -trimpath: remove all file system paths from the compiled executable
 # -o /helloworld: output binary to /helloworld
 RUN go build \
