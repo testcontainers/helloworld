@@ -13,7 +13,22 @@ RUN go mod download
 
 # Copy source & build
 COPY . .
-RUN go build -v -ldflags '-extldflags "-static"' -o /helloworld .
+
+# Build binary:
+# -a: force rebuild
+# -installsuffix cgo: remove cgo support
+# -ldflags="-w -s -extldflags '-static'": enable static linking, omits the DWARF symbol table
+# -trimpath: remove all file system paths from the compiled executable
+# -o /helloworld: output binary to /helloworld
+RUN go build \
+    -a \
+    -installsuffix cgo \
+    -ldflags="-w -s -extldflags '-static'" \
+    -trimpath \
+    -o /helloworld .
+
+# Compress with UPX (trade-off: smaller size vs startup time)
+RUN apk add --no-cache upx && upx --best --lzma /helloworld
 
 # ------------
 # Certificates
