@@ -28,7 +28,10 @@ RUN go build \
     -o /helloworld .
 
 # Compress with UPX (trade-off: smaller size vs startup time)
-RUN apk add --no-cache upx && upx --best --lzma /helloworld
+# Note: UPX is not available for s390x architecture
+RUN if [ "$(uname -m)" != "s390x" ]; then \
+        apk add --no-cache upx && upx --best --lzma /helloworld; \
+    fi
 
 # ------------
 # Certificates
