@@ -10,6 +10,10 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 WORKDIR /app
 
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
 # Install source deps
 COPY go.mod go.sum ./
 RUN go mod download
@@ -29,25 +33,9 @@ RUN go build \
     -trimpath \
     -o /bin/helloworld .
 
-# Try to compress with UPX, but don't fail if it doesn't work
-RUN try { \
-        Write-Host 'Attempting to download and use UPX...'; \
-        Invoke-WebRequest -Uri 'https://github.com/upx/upx/releases/download/v5.0.2/upx-5.0.2-win64.zip' -OutFile 'upx.zip' -UseBasicParsing; \
-        Expand-Archive -Path 'upx.zip' -DestinationPath 'C:\upx' -Force; \
-        $upxExe = Get-ChildItem -Path 'C:\upx' -Name 'upx.exe' -Recurse | Select-Object -First 1; \
-        if ($upxExe) { \
-            $upxPath = Join-Path 'C:\upx' $upxExe; \
-            & $upxPath --best --lzma /bin/helloworld; \
-            Write-Host 'UPX compression successful'; \
-        } else { \
-            Write-Host 'UPX executable not found, skipping compression'; \
-        } \
-    } catch { \
-        Write-Host "UPX compression failed: $_. Continuing without compression."; \
-    } finally { \
-        Remove-Item -Path 'upx.zip' -Force -ErrorAction SilentlyContinue; \
-        Remove-Item -Path 'C:\upx' -Recurse -Force -ErrorAction SilentlyContinue; \
-    }
+# Install UPX
+RUN choco install upx
+RUN upx --best --lzma /bin/helloworld
 
 # -----------------
 # Distributed Image
