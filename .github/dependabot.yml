@@ -8,9 +8,7 @@ updates:
       open-pull-requests-limit: 3
       rebase-strategy: disabled
     - package-ecosystem: docker
-      directories:
-        - /linux
-        - /windows
+      directory: /
       schedule:
         interval: monthly
         day: sunday
