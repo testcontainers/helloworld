@@ -15,10 +15,19 @@ RUN go mod download
 COPY . .
 RUN go build -v -ldflags '-extldflags "-static"' -o /helloworld .
 
+# ------------
+# Certificates
+# ------------
+FROM alpine:3.22 AS certs
+
+RUN apk --no-cache add ca-certificates
+
 # -----------------
 # Distributed Image
 # -----------------
-FROM alpine:3.20
+FROM scratch
+
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY static /static
 COPY --from=builder /helloworld /helloworld
 ENTRYPOINT ["/helloworld"]
