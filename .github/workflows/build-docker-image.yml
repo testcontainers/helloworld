@@ -59,6 +59,7 @@ jobs:
 
   build-image-linux:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -99,7 +100,7 @@ jobs:
           context: .
           file: linux/Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v6
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -110,6 +111,7 @@ jobs:
           - ltsc2019
           - ltsc2022
     runs-on: windows-2022
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
@@ -137,7 +139,6 @@ jobs:
           docker build -f windows/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/nanoserver:${{ matrix.os-version }} -t ${{ steps.meta.outputs.tags }} .
 
       - name: Push image
-        if: github.ref == 'refs/heads/main'
         run: |
           docker push ${{ steps.meta.outputs.tags }}
 
@@ -148,6 +149,7 @@ jobs:
       - build-image-linux
       - build-image-windows
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
@@ -187,7 +189,6 @@ jobs:
           echo "OS_VERSION_ltsc2022=${full_version}" >> $GITHUB_ENV;
 
       - name: Docker Manifest
-        if: github.ref == 'refs/heads/main'
         run: >-
           target_image=${{ steps.meta.outputs.tags }};
           linux_manifest=$(docker manifest inspect ${target_image}-linux);
