@@ -1,7 +1,7 @@
 # -----------
 # Build Image
 # -----------
-FROM golang:1.22-alpine3.19 AS builder
+FROM golang:1.25-alpine3.22 AS builder
 ENV CGO_ENABLED=0
 #ENV GOOS=linux
 
