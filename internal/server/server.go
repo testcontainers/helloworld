@@ -33,10 +33,10 @@ func startServerOnPort(port int, instanceUUID string, delayStart int) {
 	server := http.NewServeMux()
 	server.Handle("/", fs)
 	server.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "PONG")
+		fmt.Fprint(w, "PONG")
 	})
 	server.HandleFunc("/uuid", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, instanceUUID)
+		fmt.Fprint(w, instanceUUID)
 	})
 
 	// Delay before the server starts
