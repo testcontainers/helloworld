@@ -27,9 +27,7 @@ RUN go build \
     -trimpath \
     -o /bin/helloworld .
 
-# Install UPX
-RUN choco install upx
-RUN upx --best --lzma /bin/helloworld
+# Do not optimise with UPX on Windows, as nanoserver does not have PowerShell to install it
 
 # -----------------
 # Distributed Image
