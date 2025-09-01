@@ -6,8 +6,6 @@ ARG BASE_IMAGE
 FROM golang:1.25-nanoserver as builder
 ENV CGO_ENABLED=0
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
 WORKDIR /app
 
 # Install source deps
@@ -29,25 +27,7 @@ RUN go build \
     -trimpath \
     -o /bin/helloworld .
 
-# Try to compress with UPX, but don't fail if it doesn't work
-RUN try { \
-        Write-Host 'Attempting to download and use UPX...'; \
-        Invoke-WebRequest -Uri 'https://github.com/upx/upx/releases/download/v5.0.2/upx-5.0.2-win64.zip' -OutFile 'upx.zip' -UseBasicParsing; \
-        Expand-Archive -Path 'upx.zip' -DestinationPath 'C:\upx' -Force; \
-        $upxExe = Get-ChildItem -Path 'C:\upx' -Name 'upx.exe' -Recurse | Select-Object -First 1; \
-        if ($upxExe) { \
-            $upxPath = Join-Path 'C:\upx' $upxExe; \
-            & $upxPath --best --lzma /bin/helloworld; \
-            Write-Host 'UPX compression successful'; \
-        } else { \
-            Write-Host 'UPX executable not found, skipping compression'; \
-        } \
-    } catch { \
-        Write-Host "UPX compression failed: $_. Continuing without compression."; \
-    } finally { \
-        Remove-Item -Path 'upx.zip' -Force -ErrorAction SilentlyContinue; \
-        Remove-Item -Path 'C:\upx' -Recurse -Force -ErrorAction SilentlyContinue; \
-    }
+# Do not optimise with UPX on Windows, as nanoserver does not have PowerShell to install it
 
 # -----------------
 # Distributed Image
