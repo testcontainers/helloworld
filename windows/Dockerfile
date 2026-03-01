@@ -3,7 +3,7 @@ ARG BASE_IMAGE
 # -----------
 # Build Image
 # -----------
-FROM golang:1.25-nanoserver as builder
+FROM golang:1.26-nanoserver as builder
 ENV CGO_ENABLED=0
 
 WORKDIR /app
